@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Emumir</title>
+<link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+
+
+    <!-- Sidebar kiri -->
+  <nav class="sidebar">
+    <div class="brand" data-tip="Emumir" id="navVer"><img class="nav-logo" src="icon.png" alt=""></div>
+    <button class="nav-item active" data-page="home" data-tip="Beranda">
+      <svg viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Beranda</span>
+    </button>
+    <div class="nav-gap"></div>
+    <button class="nav-item" data-page="setup" data-tip="Setup">
+      <svg viewBox="0 0 24 24"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>
+      <span>Setup</span>
+    </button>
+    <button class="nav-item" data-page="settings" data-tip="Setelan">
+      <svg viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+      <span>Setelan</span>
+    </button>
+    <button class="nav-item" data-page="log" data-tip="Log">
+      <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+      <span>Log</span>
+      <i class="badge-dot hidden" id="logDot"></i>
+    </button>
+  </nav>
+
+  <div class="main">
+
+    <!-- Header -->
+    <header class="topbar">
+      <h1 id="pageTitle">Beranda</h1>
+      <div class="tb-space"></div>
+      <label class="search" id="searchWrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="search" placeholder="Cari device">
+      </label>
+      <div class="pill" id="mirrorPill">
+        <span class="pill-dot"></span><span id="mirrorPillText">Tidak ada mirror</span>
+        <button class="pill-stop hidden" id="pillStop">Stop</button>
+      </div>
+      <div class="winctl">
+        <button id="winMin" title="Minimize"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button id="winMax" title="Maximize"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></button>
+        <button id="winClose" class="close" title="Close"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+    </header>
+
+    <!-- ===================== BERANDA ===================== -->
+    <section class="page" id="page-home">
+
+      <div class="banner" id="wdBanner">
+        <div>
+          <div class="banner-title">Wireless debugging belum terdeteksi</div>
+          <div class="banner-sub" id="wdBannerSub">Nyalakan Developer options → Wireless debugging di HP dan pastikan satu WiFi dengan komputer ini.</div>
+        </div>
+        <button class="btn primary" id="wdBannerBtn">Buka Setup</button>
+      </div>
+
+      <h2 class="section-title" id="detectedTitle">Terdeteksi di jaringan</h2>
+      <div class="avatar-row" id="detectedRow"></div>
+
+      <h2 class="section-title">Device kamu</h2>
+      <div class="grid" id="deviceGrid"></div>
+    </section>
+
+    <!-- ===================== SETUP ===================== -->
+    <section class="page hidden" id="page-setup">
+      <div class="two-col">
+
+        <div class="card">
+          <div class="card-head"><div><h3>Pairing</h3><p>Hanya perlu sekali per HP.</p></div></div>
+          <ol class="hint">
+            <li>Di HP: Developer options → Wireless debugging → <b>Pair device with pairing code</b></li>
+            <li>Isi IP:PORT dan kode 6 digit yang muncul di HP</li>
+          </ol>
+          <label class="lbl">IP : Port pairing</label>
+          <input type="text" id="pairIp" placeholder="192.168.1.23:37251" spellcheck="false">
+          <label class="lbl">Kode pairing</label>
+          <input type="text" id="pairCode" placeholder="123456" maxlength="6" inputmode="numeric">
+          <button class="btn primary wide" id="pairBtn">Pair</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><h3>Tambah device</h3><p>Port ini beda dari port pairing.</p></div></div>
+          <ol class="hint">
+            <li>Lihat <b>IP address &amp; Port</b> di layar utama Wireless debugging</li>
+            <li>Atau pilih dari daftar yang terdeteksi otomatis di bawah</li>
+          </ol>
+          <label class="lbl">IP : Port</label>
+          <input type="text" id="ip" placeholder="192.168.1.23:5555" spellcheck="false">
+          <button class="btn primary wide" id="addBtn">Tambah &amp; hubungkan</button>
+
+          <div class="lbl" style="margin-top:18px">Terdeteksi otomatis</div>
+          <div class="chips" id="setupDetected"><span class="muted">mencari…</span></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== SETELAN ===================== -->
+    <section class="page hidden" id="page-settings">
+      <div class="settings-head">
+        <p class="muted">Berlaku di mirror berikutnya. Nama opsi mengikuti flag scrcpy.</p>
+        <button class="btn ghost" id="resetSettings">Reset default</button>
+      </div>
+      <div id="settingsRoot"></div>
+    </section>
+
+    <!-- ===================== LOG ===================== -->
+    <section class="page hidden" id="page-log">
+      <div class="settings-head">
+        <p class="muted">Output adb, scrcpy-server, dan decoder.</p>
+        <button class="btn ghost" id="clearLog">Bersihkan</button>
+      </div>
+      <div class="log" id="log"></div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="tauri-shim.js"></script>
+<script src="renderer.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

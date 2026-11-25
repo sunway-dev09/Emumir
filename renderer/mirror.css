@@ -1,0 +1,135 @@
+@font-face { font-family:'Inter'; src:url('fonts/inter-latin-opsz-normal.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+
+:root {
+  --bg:#000; --card:rgba(255,255,255,.07); --card-2:rgba(255,255,255,.12); --text:#fff; --text-2:rgba(255,255,255,.7);
+  --blue:rgba(255,255,255,.18); --green:#4cc38a; --red:#ff4d4d;
+  --font:'Inter','Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;
+}
+* { box-sizing:border-box; }
+html,body { height:100%; margin:0; }
+body { display:flex; flex-direction:column; font-family:var(--font); font-weight:400; background:var(--bg); color:var(--text); overflow:hidden; }
+.hidden { display:none !important; }
+
+svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; display:block; }
+
+.toolbar { flex-shrink:0; display:flex; align-items:center; gap:6px; padding:5px 0 5px 10px; background:var(--bg); -webkit-app-region:drag; user-select:none; }
+.tb-group { display:flex; align-items:center; gap:2px; -webkit-app-region:no-drag; }
+.tb-title { font-size:12px; font-weight:700; color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:110px; margin-right:4px; }
+.tb-spacer { flex:1; min-width:0; }
+.tool-btn { width:30px; height:30px; padding:6px; border:0; border-radius:8px; background:transparent; color:var(--text-2); cursor:pointer; }
+.tool-btn:hover { background:var(--card-2); color:#fff; }
+.tool-btn:active { background:var(--blue); color:#fff; }
+.tool-btn.red:hover { background:var(--red); }
+.tool-btn.active { background:var(--blue); color:#fff; }
+
+.tb-winctl { display:flex; height:30px; margin-left:4px; -webkit-app-region:no-drag; }
+.win-btn { width:40px; border:0; background:transparent; color:var(--text-2); padding:8px 12px; cursor:pointer; }
+.win-btn:hover { background:var(--card-2); color:#fff; }
+.win-btn.close:hover { background:var(--red); }
+
+/* Strip baterai HP di atas toolbar */
+.batbar { flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:6px; height:20px; background:var(--bg); color:var(--text-2); font-size:11px; font-weight:700; letter-spacing:.02em; -webkit-app-region:drag; user-select:none; border-bottom:1px solid rgba(255,255,255,.04); }
+.bat-ico { width:22px; height:11px; stroke-width:1.6; }
+.bat-fill { fill:currentColor; stroke:none; transition:width .3s, fill .3s; }
+.batbar.low { color:var(--red); }
+.batbar.charging { color:var(--green); }
+.bat-bolt { font-size:11px; line-height:1; }
+
+body.viewonly .needs-control { display:none; }
+
+.stage { flex:1; min-height:0; position:relative; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.no-signal { display:flex; flex-direction:column; align-items:center; gap:14px; color:var(--text-2); font-size:13px; font-weight:600; }
+.spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--card-2); border-top-color:var(--blue); animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.no-signal.stopped .spinner { display:none; }
+#screenCanvas { display:none; max-width:100%; max-height:100%; outline:none; background:#000; cursor:default; }
+
+.viewonly-badge { position:absolute; right:10px; top:10px; padding:4px 9px; border-radius:10px; background:rgba(0,0,0,.65); font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--text-2); pointer-events:none; }
+
+.drop-overlay { display:none; position:absolute; inset:0; z-index:5; background:rgba(51,95,255,.88); font-size:20px; font-weight:700; text-align:center; align-items:center; justify-content:center; flex-direction:column; gap:10px; }
+.drop-overlay small { font-size:12px; font-weight:500; max-width:80%; opacity:.9; }
+.drop-overlay.active { display:flex; }
+
+.toast { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:var(--card-2); color:#fff; border-radius:8px; font-size:12px; font-weight:600; padding:9px 14px; opacity:0; pointer-events:none; transition:opacity .2s; max-width:85%; z-index:6; box-shadow:0 8px 24px rgba(0,0,0,.5); }
+.toast.show { opacity:1; }
+.toast.err { background:#4a2227; box-shadow:inset 0 0 0 1px var(--red); }
+
+/* Toolbar tetap muat di lebar sempit: judul disembunyikan lalu tombol dirapatkan */
+.tool-btn { flex-shrink:1; min-width:24px; }
+@media (max-width:600px) { .tb-title { display:none; } }
+@media (max-width:520px) {
+  .toolbar { padding-left:6px; gap:2px; }
+  .tool-btn { width:26px; padding:5px; }
+  .win-btn { width:34px; padding:8px 10px; }
+}
+
+/* ---- Mode Game ---- */
+.game-badge { position:absolute; left:10px; top:10px; padding:4px 9px; border-radius:10px; background:rgba(0,0,0,.65); font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--green); pointer-events:none; z-index:5; }
+.game-badge.hidden { display:none; }
+.gm-overlay { position:absolute; z-index:4; background:rgba(0,0,0,.35); outline:1px dashed rgba(255,255,255,.35); }
+.gm-overlay.hidden { display:none; }
+.gm-marker { position:absolute; transform:translate(-50%,-50%); min-width:34px; height:34px; padding:0 8px; display:flex; align-items:center; justify-content:center; border-radius:17px; background:rgba(59,130,246,.85); color:#fff; font-size:10px; font-weight:800; cursor:grab; user-select:none; touch-action:none; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+.gm-marker.joy { background:rgba(34,197,94,.85); min-width:56px; height:56px; border-radius:28px; }
+.gm-marker.cam { background:rgba(234,179,8,.9); color:#000; min-width:56px; height:56px; border-radius:28px; }
+.gm-marker:active { cursor:grabbing; }
+.gm-panel { position:absolute; z-index:7; left:50%; top:10px; transform:translateX(-50%); padding:8px 12px; border-radius:10px; background:rgba(0,0,0,.8); color:#fff; font-size:11px; line-height:1.6; text-align:center; max-width:90%; }
+.gm-panel.hidden { display:none; }
+.gm-row { margin-top:4px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px 12px; }
+.gm-row label { display:inline-flex; align-items:center; gap:5px; }
+.gm-row input[type=range] { width:90px; accent-color:#fff; }
+.gm-row input[type=text] { width:110px; padding:3px 7px; border:0; border-radius:7px; background:rgba(255,255,255,.12); color:#fff; font-size:11px; outline:none; }
+.gm-chk { cursor:pointer; }
+.tool-chip { width:auto; padding:5px 9px; font-size:11px; font-weight:700; white-space:nowrap; max-width:130px; overflow:hidden; text-overflow:ellipsis; }
+/* tombol saat main: hanya teks, tanpa background */
+.gm-play { position:absolute; z-index:3; pointer-events:none; }
+.gm-play.hidden { display:none; }
+.gm-tag { position:absolute; background:none; border:0; box-shadow:none; color:#fff; font-size:12px; font-weight:800; letter-spacing:.04em; white-space:nowrap; text-shadow:0 0 3px #000, 0 0 3px #000, 0 1px 4px #000; }
+.gm-panel .gm-sub { color:var(--text-2); }
+.gm-panel button { margin:2px; padding:3px 9px; border:0; border-radius:7px; background:var(--card-2); color:#fff; font-size:11px; font-weight:700; cursor:pointer; }
+.gm-panel button:hover { background:var(--blue); }
+
+
+/* ---- Selaras dengan UI utama (gaya Liner): netral, tanpa aksen biru ---- */
+body { font-weight:400; -webkit-font-smoothing:antialiased; }
+*::-webkit-scrollbar { display:none; }
+.toolbar { padding:6px 0 6px 10px; }
+.tb-title { font-weight:600; color:var(--text-2); }
+.tool-btn { border-radius:8px; transition:background .15s ease, color .15s ease, transform .1s ease; }
+.tool-btn:hover { background:rgba(255,255,255,.1); }
+.tool-btn:active { background:rgba(255,255,255,.16); transform:scale(.94); }
+.tool-btn.active { background:rgba(255,255,255,.16); color:#fff; }
+.win-btn:hover { background:rgba(255,255,255,.1); }
+.batbar { font-weight:500; border-bottom:0; }
+.spinner { border-color:rgba(255,255,255,.12); border-top-color:#fff; }
+.drop-overlay { background:rgba(10,10,10,.82); backdrop-filter:blur(24px) saturate(150%); font-weight:600; }
+.toast { border-radius:12px; background:rgba(22,22,24,.9); backdrop-filter:blur(40px) saturate(150%); }
+.toast.err { background:rgba(22,22,24,.9); color:var(--red); box-shadow:0 8px 24px rgba(0,0,0,.5); }
+.viewonly-badge, .game-badge { border-radius:8px; font-weight:600; background:rgba(22,22,24,.8); backdrop-filter:blur(12px); }
+.gm-panel { border-radius:12px; background:rgba(22,22,24,.9); backdrop-filter:blur(24px); }
+.gm-panel button { border-radius:8px; font-weight:600; }
+.gm-panel button:hover { background:rgba(255,255,255,.2); }
+
+.gm-row input.gm-wide { width:230px; }
+
+
+
+
+
+/* Dropdown preset Mode Game */
+.gm-menu { position:fixed; z-index:50; min-width:170px; padding:6px; border-radius:12px; background:rgba(28,28,30,.97); border:1px solid rgba(255,255,255,.08); box-shadow:0 12px 32px rgba(0,0,0,.5); backdrop-filter:blur(24px); color:#fff; font-size:13px; }
+.gm-menu.hidden { display:none; }
+.gm-mi { display:flex; align-items:center; gap:10px; padding:8px 12px 8px 8px; border-radius:8px; cursor:pointer; white-space:nowrap; }
+.gm-mi:hover { background:rgba(255,255,255,.1); }
+.gm-mi.off { opacity:.4; pointer-events:none; }
+.gm-ic { width:16px; text-align:center; font-size:13px; opacity:.9; }
+.gm-sep { height:1px; margin:6px 4px; background:rgba(255,255,255,.1); }
+
+/* ---- D-pad WASD + ikon klik mouse ---- */
+.gm-marker.dpad, .gm-tag.dpad { position:absolute; width:150px; height:150px; min-width:0; padding:0; border-radius:50%; background:none; border:2px solid #d8353f; box-shadow:none; display:block; }
+.dp { position:absolute; width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.92); color:#2a2a2a; border-radius:2px; font-style:normal; font-size:17px; font-weight:600; font-family:Arial,Helvetica,sans-serif; text-shadow:none; letter-spacing:0; }
+.dp-w { left:calc(50% - 21px); top:10px; }
+.dp-s { left:calc(50% - 21px); bottom:10px; }
+.dp-a { left:10px; top:calc(50% - 21px); }
+.dp-d { right:10px; top:calc(50% - 21px); }
+.gm-marker.mouse, .gm-tag.mouse { min-width:0; width:44px; height:60px; padding:0; border-radius:0; background:none; box-shadow:none; }
+.gm-marker.mouse img, .gm-tag.mouse img { width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none; filter:drop-shadow(0 1px 3px rgba(0,0,0,.6)); }

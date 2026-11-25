@@ -1,0 +1,14 @@
+{
+  "name": "scrctl",
+  "version": "0.8.5",
+  "private": true,
+  "description": "Emumir - control panel scrcpy buatan sendiri (Tauri + Rust)",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
